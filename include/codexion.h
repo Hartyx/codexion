@@ -6,7 +6,7 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/04 07:56:02 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/11 01:02:07 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/12 08:11:29 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ struct s_data
     t_dongle    *dongles;
     pthread_mutex_t log_mutex;
     pthread_mutex_t state_mutex;
+    pthread_t mnitor;
 };
 
 int		parse_args(int argc, char **argv, t_config *cfg);

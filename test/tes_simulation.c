@@ -51,3 +51,23 @@ int	start_simulation(t_data *data)
 		return (1);
 	return (0);
 }
+/*
+int	start_simulation(t_data *data)
+{
+	int	created;
+	int	monitor_ok;
+
+	set_start_times(data);
+	created = create_threads(data);
+	monitor_ok = 0;
+	if (created == data->cfg.nb_coders)
+		monitor_ok = !pthread_create(&data->monitor, NULL,
+				monitor_routine, data);
+	if (!monitor_ok)
+		set_stop(data);
+	join_threads(data, created);
+	if (monitor_ok)
+		pthread_join(data->monitor, NULL);
+	return (created != data->cfg.nb_coders || !monitor_ok);
+}
+*/
