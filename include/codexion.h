@@ -6,7 +6,7 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/04 07:56:02 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/12 08:11:29 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/13 10:44:02 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,4 +79,7 @@ int start_simulation(t_data *data);
 void	destroy_dongles(t_data *data, int count);
 void	take_dongle(t_coder *coder, t_dongle *dongle);
 void	release_dongle(t_dongle *dongle, long cooldown);
+int is_stopped(t_data *data);
+void wake_all_dongles(t_data *data);
+void    set_stop(t_data *data);
 #endif

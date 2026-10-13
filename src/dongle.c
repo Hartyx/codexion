@@ -6,7 +6,7 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/10 00:26:12 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/11 09:10:40 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/13 10:54:27 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,19 @@ static void wait_dongle(t_dongle *dongle)
     }
 }
 
-void	take_dongle(t_coder *coder, t_dongle *dongle)
+int	take_dongle(t_coder *coder, t_dongle *dongle)
 {
     pthread_mutex_lock(&dongle->mutex);
     wait_dongle(dongle);
+    if (is_stopped(coder->data))
+    {
+        pthread_mutex_unlock(&dongle->mutex);
+        return (1);
+    }
     dongle->taken = 1;
     pthread_mutex_unlock(&dongle->mutex);
     log_state(coder, "has taken a dongle");
+    return (0);
 }
 
 void	release_dongle(t_dongle *dongle, long cooldown)
