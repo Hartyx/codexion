@@ -51,7 +51,7 @@ int	start_simulation(t_data *data)
 		return (1);
 	return (0);
 }
-/*
+
 int	start_simulation(t_data *data)
 {
 	int	created;
@@ -70,4 +70,4 @@ int	start_simulation(t_data *data)
 		pthread_join(data->monitor, NULL);
 	return (created != data->cfg.nb_coders || !monitor_ok);
 }
-*/
+

@@ -6,7 +6,7 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/04 07:56:02 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/13 10:44:02 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/17 10:38:48 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ struct s_data
     t_dongle    *dongles;
     pthread_mutex_t log_mutex;
     pthread_mutex_t state_mutex;
-    pthread_t mnitor;
+    pthread_t monitor;
 };
 
 int		parse_args(int argc, char **argv, t_config *cfg);
@@ -74,12 +74,14 @@ void	sleep_ms(long ms);
 void	cleanup(t_data *data);
 int	init_data(t_data *data, t_config *cfg);
 void    log_state(t_coder *coder, char *msg);
+void    log_burnout(t_coder *coder);
 void    *coder_routine(void *arg);
 int start_simulation(t_data *data);
 void	destroy_dongles(t_data *data, int count);
-void	take_dongle(t_coder *coder, t_dongle *dongle);
+int take_dongle(t_coder *coder, t_dongle *dongle);
 void	release_dongle(t_dongle *dongle, long cooldown);
 int is_stopped(t_data *data);
 void wake_all_dongles(t_data *data);
 void    set_stop(t_data *data);
+void    *monitor_routine(void *arg);
 #endif

@@ -6,29 +6,42 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 22:15:24 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/11 09:14:54 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/17 15:28:18 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-static void take_forks(t_coder  *coder)
+
+static int  wait_stop(t_coder   *coder, t_dongle *dongle)
+{
+    while(!is_stopped(coder->data))
+        usleep(500);
+    release_dongle(dongle, 0);
+    return (1);
+}
+static int take_forks(t_coder  *coder)
 {
     t_dongle    *first;
     t_dongle    *second;
 
-    if(coder->left < coder->right)
-    {
-        first = coder->left;
-        second = coder->right;
-    }
-    else
+    first = coder->left;
+    second = coder->right;
+    if(coder->left > coder->right)
     {
         first = coder->right;
         second = coder->left;
     }
-    take_dongle(coder, first);
-    take_dongle(coder, second);
+    if (take_dongle(coder, first))
+        return (1);
+    if(first == second)
+        return (wait_stop(coder, first));
+    if (take_dongle(coder, second))
+    {
+        release_dongle(first, 0);
+        return (1);
+    }
+    return (0);
 }
 
 static void start_compile(t_coder *coder)
@@ -50,6 +63,9 @@ static void release_forks(t_coder   *coder)
     cooldown = coder->data->cfg.dongle_cooldown;
     release_dongle(coder->left, cooldown);
     release_dongle(coder->right, cooldown);
+    pthread_mutex_lock(&coder->data->state_mutex);
+    coder->nb_compiles++;
+    pthread_mutex_unlock(&coder->data->state_mutex);
 }
 
 void    *coder_routine(void *arg)
@@ -59,7 +75,7 @@ void    *coder_routine(void *arg)
 
     coder = (t_coder *)arg;
     data = coder->data;
-    while(coder->nb_compiles < data->cfg.nb_compiles_required)
+    while(coder->nb_compiles < data->cfg.nb_compiles_required && !is_stopped(data))
     {
         take_forks(coder);
         start_compile(coder);
