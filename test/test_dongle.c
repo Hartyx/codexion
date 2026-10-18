@@ -1,70 +1,65 @@
-#include "codexion.h"
+// #include "codexion.h"
 
-static void	wait_dongle(t_dongle *dongle)
+static long	get_key(t_coder *coder, t_dongle *dongle)
 {
-	struct timespec	ts;
+	long	key;
 
-	while (dongle->taken || get_time_ms() < dongle->available_at)
+	if (!coder->data->cfg.use_edf)
 	{
-		if (dongle->taken)
-			pthread_cond_wait(&dongle->cond, &dongle->mutex);
-		else
-		{
-			ts.tv_sec = dongle->available_at / 1000;
-			ts.tv_nsec = (dongle->available_at % 1000) * 1000000;
-			pthread_cond_timedwait(&dongle->cond, &dongle->mutex, &ts);
-		}
+		key = dongle->ticket;
+		dongle->ticket++;
+		return (key);
 	}
+	pthread_mutex_lock(&coder->data->state_mutex);
+	key = coder->last_compile_start + coder->data->cfg.time_to_burnout;
+	pthread_mutex_unlock(&coder->data->state_mutex);
+	return (key);
 }
 
-void	take_dongle(t_coder *coder, t_dongle *dongle)
+static int	must_wait(t_coder *coder, t_dongle *dongle)
 {
-	pthread_mutex_lock(&dongle->mutex);
-	wait_dongle(dongle);
-	dongle->taken = 1;
-	pthread_mutex_unlock(&dongle->mutex);
-	log_state(coder, "has taken a dongle");
+	if (is_stopped(coder->data))
+		return (0);
+	if (dongle->taken || get_time_ms() < dongle->available_at)
+		return (1);
+	return (heap_top_id(&dongle->queue) != coder->id);
 }
 
-void	release_dongle(t_dongle *dongle, long cooldown)
-{
-	pthread_mutex_lock(&dongle->mutex);
-	dongle->taken = 0;
-	dongle->available_at = get_time_ms() + cooldown;
-	pthread_cond_signal(&dongle->cond);
-	pthread_mutex_unlock(&dongle->mutex);
-}
-
-/*
-#include "codexion.h"
-
-static void	wait_dongle(t_data *data, t_dongle *dongle)
+static void	wait_dongle(t_coder *coder, t_dongle *dongle)
 {
 	struct timespec	ts;
 
-	while ((dongle->taken || get_time_ms() < dongle->available_at)
-		&& !is_stopped(data))
+	while (must_wait(coder, dongle))
 	{
-		if (dongle->taken)
-			pthread_cond_wait(&dongle->cond, &dongle->mutex);
-		else
+		if (!dongle->taken && get_time_ms() < dongle->available_at)
 		{
 			ts.tv_sec = dongle->available_at / 1000;
 			ts.tv_nsec = (dongle->available_at % 1000) * 1000000;
 			pthread_cond_timedwait(&dongle->cond, &dongle->mutex, &ts);
 		}
+		else
+			pthread_cond_wait(&dongle->cond, &dongle->mutex);
 	}
 }
 
 int	take_dongle(t_coder *coder, t_dongle *dongle)
 {
+	long	key;
+
 	pthread_mutex_lock(&dongle->mutex);
-	wait_dongle(coder->data, dongle);
+	key = get_key(coder, dongle);
+	if (heap_push(&dongle->queue, key, coder->id))
+	{
+		pthread_mutex_unlock(&dongle->mutex);
+		return (1);
+	}
+	wait_dongle(coder, dongle);
 	if (is_stopped(coder->data))
 	{
 		pthread_mutex_unlock(&dongle->mutex);
 		return (1);
 	}
+	heap_pop(&dongle->queue);
 	dongle->taken = 1;
 	pthread_mutex_unlock(&dongle->mutex);
 	log_state(coder, "has taken a dongle");
@@ -76,7 +71,6 @@ void	release_dongle(t_dongle *dongle, long cooldown)
 	pthread_mutex_lock(&dongle->mutex);
 	dongle->taken = 0;
 	dongle->available_at = get_time_ms() + cooldown;
-	pthread_cond_signal(&dongle->cond);
+	pthread_cond_broadcast(&dongle->cond);
 	pthread_mutex_unlock(&dongle->mutex);
 }
-*/

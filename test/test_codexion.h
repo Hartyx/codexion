@@ -6,7 +6,7 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/04 07:56:02 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/05 00:45:04 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/18 08:13:18 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,5 +66,44 @@ struct s_data
 int		parse_args(int argc, char **argv, t_config *cfg);
 long	get_time_ms(void);
 void	sleep_ms(long ms);
+
+
+/*
+typedef struct s_node
+{
+	long	key;
+	int		id;
+}	t_node;
+
+typedef struct s_heap
+{
+	t_node	*nodes;
+	int		size;
+	int		cap;
+}	t_heap;
+int		node_less(t_node *a, t_node *b);
+void	heap_swap(t_node *a, t_node *b);
+void	sift_up(t_heap *heap, int i);
+void	sift_down(t_heap *heap, int i);
+int		heap_init(t_heap *heap, int cap);
+void	heap_destroy(t_heap *heap);
+int		heap_push(t_heap *heap, long key, int id);
+int		heap_top_id(t_heap *heap);
+void	heap_pop(t_heap *heap);
+
+
+remplace par ceci
+typedef struct s_dongle
+{
+	pthread_mutex_t	mutex;
+	pthread_cond_t	cond;
+	int				taken;
+	long			available_at;
+	long			ticket;
+	t_heap			queue;
+}	t_dongle;
+*/
+
+
 
 #endif

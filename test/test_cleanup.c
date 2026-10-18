@@ -37,3 +37,19 @@ void	cleanup(t_data *data)
 	pthread_mutex_destroy(&data->log_mutex);
 	pthread_mutex_destroy(&data->state_mutex);
 }
+
+/*
+void	destroy_dongles(t_data *data, int count)
+{
+	int	i;
+
+	i = 0;
+	while (i < count)
+	{
+		pthread_mutex_destroy(&data->dongles[i].mutex);
+		pthread_cond_destroy(&data->dongles[i].cond);
+		heap_destroy(&data->dongles[i].queue);
+		i++;
+	}
+}
+*/

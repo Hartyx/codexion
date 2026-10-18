@@ -6,7 +6,7 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 22:15:24 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/17 15:28:18 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/18 07:45:39 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ static void start_compile(t_coder *coder)
     data = coder->data;
     pthread_mutex_lock(&data->state_mutex);
     coder->last_compile_start = get_time_ms();
-    coder->nb_compiles++;
     pthread_mutex_unlock(&data->state_mutex);
     log_state(coder, "is compiling");
 }
@@ -77,7 +76,8 @@ void    *coder_routine(void *arg)
     data = coder->data;
     while(coder->nb_compiles < data->cfg.nb_compiles_required && !is_stopped(data))
     {
-        take_forks(coder);
+        if(take_forks(coder))
+            return (NULL);
         start_compile(coder);
         sleep_ms(data->cfg.time_to_compile);
         release_forks(coder);

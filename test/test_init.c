@@ -123,4 +123,27 @@ static int	init_dongles(t_data *data)
 	}
 	return (0);
 }
+
+remplace
+static int	init_one_dongle(t_dongle *dongle)
+{
+	dongle->taken = 0;
+	dongle->available_at = 0;
+	dongle->ticket = 0;
+	if (pthread_mutex_init(&dongle->mutex, NULL))
+		return (1);
+	if (pthread_cond_init(&dongle->cond, NULL))
+	{
+		pthread_mutex_destroy(&dongle->mutex);
+		return (1);
+	}
+	if (heap_init(&dongle->queue, 2))
+	{
+		pthread_cond_destroy(&dongle->cond);
+		pthread_mutex_destroy(&dongle->mutex);
+		return (1);
+	}
+	return (0);
+}
 */
+
