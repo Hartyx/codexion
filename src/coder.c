@@ -6,7 +6,7 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/08 22:15:24 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/18 07:45:39 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/19 15:16:59 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,13 +78,14 @@ void    *coder_routine(void *arg)
     {
         if(take_forks(coder))
             return (NULL);
+        
         start_compile(coder);
-        sleep_ms(data->cfg.time_to_compile);
+        sleep_ms(data, data->cfg.time_to_compile);
         release_forks(coder);
         log_state(coder, "is debugging");
-        sleep_ms(data->cfg.time_to_debug);
+        sleep_ms(data, data->cfg.time_to_debug);
         log_state(coder, "is refactoring");
-        sleep_ms(data->cfg.time_to_refactor);
+        sleep_ms(data, data->cfg.time_to_refactor);
     }
     return NULL;
 }

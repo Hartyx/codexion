@@ -6,7 +6,7 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/04 07:56:02 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/18 07:39:01 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/19 15:07:00 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,27 @@ typedef struct  s_config
 
 typedef struct s_data t_data;
 
+typedef struct s_node
+{
+    long    key;
+    int id;
+}   t_node;
+
+typedef struct  s_heap
+{
+    t_node  *nodes;
+    int size;
+    int cap;
+}   t_heap;
+
 typedef struct s_dongle
 {
     pthread_mutex_t mutex;
     pthread_cond_t  cond;
     int taken;
+    long    ticket;
     long    available_at;
+    t_heap  queue;
 }   t_dongle;
 
 typedef struct s_coder
@@ -70,7 +85,7 @@ struct s_data
 
 int		parse_args(int argc, char **argv, t_config *cfg);
 long	get_time_ms(void);
-void	sleep_ms(long ms);
+void    sleep_ms(t_data *data, long ms);
 void	cleanup(t_data *data);
 int	init_data(t_data *data, t_config *cfg);
 void    log_state(t_coder *coder, char *msg);
@@ -84,4 +99,13 @@ int is_stopped(t_data *data);
 void wake_all_dongles(t_data *data);
 void    set_stop(t_data *data);
 void    *monitor_routine(void *arg);
+int node_less(t_node    *a, t_node  *b);
+void    heap_swap(t_node *a, t_node *b);
+void    shift_up(t_heap *heap, int i);
+void    shift_down(t_heap *heap, int i);
+int heap_init(t_heap *heap, int cap);
+void	heap_destroy(t_heap *heap);
+int	heap_push(t_heap *heap, long key, int id);
+int	heap_top_id(t_heap *heap);
+void	heap_pop(t_heap *heap);
 #endif

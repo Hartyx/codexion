@@ -6,7 +6,7 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/04 07:56:09 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/10 07:10:21 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/19 14:06:22 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	destroy_dongles(t_data *data, int count)
 	{
 		pthread_mutex_destroy(&data->dongles[i].mutex);
 		pthread_cond_destroy(&data->dongles[i].cond);
+		heap_destroy(&data->dongles[i].queue);
 		i++;
 	}
 }

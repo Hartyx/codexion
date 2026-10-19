@@ -6,7 +6,7 @@
 /*   By: safidyan <safidyan@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/05 03:26:23 by safidyan          #+#    #+#             */
-/*   Updated: 2026/10/09 23:10:09 by safidyan         ###   ########.fr       */
+/*   Updated: 2026/10/19 14:05:03 by safidyan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,25 @@
 #include "codexion.h"
 
 
-static int init_one_dongle(t_dongle *dongle)
+static int	init_one_dongle(t_dongle *dongle)
 {
-    if(pthread_mutex_init(&dongle->mutex, NULL))
-        return(1);
-    if(pthread_cond_init(&dongle->cond, NULL))
-    {
-        pthread_mutex_destroy(&dongle->mutex);
-        return(1);
-    }
-    dongle->taken = 0;
-    dongle->available_at = 0;
-    return (0);
+	dongle->taken = 0;
+	dongle->available_at = 0;
+	dongle->ticket = 0;
+	if (pthread_mutex_init(&dongle->mutex, NULL))
+		return (1);
+	if (pthread_cond_init(&dongle->cond, NULL))
+	{
+		pthread_mutex_destroy(&dongle->mutex);
+		return (1);
+	}
+	if (heap_init(&dongle->queue, 2))
+	{
+		pthread_cond_destroy(&dongle->cond);
+		pthread_mutex_destroy(&dongle->mutex);
+		return (1);
+	}
+	return (0);
 }
 
 
